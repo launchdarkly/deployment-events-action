@@ -57,6 +57,7 @@ jobs:
           base-uri: 'https://ld-stg.launchdarkly.com'
           project-key: default
           environment-key: test
+          application-key: failing-workflow
           status: in_progress
           event-metadata: '
             {
@@ -79,4 +80,5 @@ jobs:
           base-uri: 'https://ld-stg.launchdarkly.com'
           project-key: default
           environment-key: test
+          application-key: failing-workflow
           status: ${{ steps.deploy.outcome }}

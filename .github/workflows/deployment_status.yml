@@ -18,6 +18,7 @@ jobs:
           base-uri: 'https://ld-stg.launchdarkly.com'
           project-key: default
           environment-key: test
+          application-key: 'deployment-status-workflow'
           status: ${{ github.event.deployment_status.state }}
           event-metadata: '
             {
