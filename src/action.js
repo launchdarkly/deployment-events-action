@@ -36,12 +36,12 @@ export const run = async () => {
   eventMetadata = JSON.parse(eventMetadata);
   deploymentMetadata = JSON.parse(deploymentMetadata);
 
-  if (!applicationKey) {
+  if (applicationKey == 'GITHUB_REPO_NAME') {
     applicationKey = process.env.GITHUB_REPOSITORY.split('/').pop();
     core.info(`Setting applicationKey to repository name: ${applicationKey}`);
   }
 
-  if (!version) {
+  if (version == 'GITHUB_SHA') {
     version = process.env.GITHUB_SHA;
     core.info(`Setting version to SHA: ${version}`);
   }
