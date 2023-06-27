@@ -1,0 +1,47 @@
+name: 'LaunchDarkly Deployment Events'
+description: 'Send deployment events to LaunchDarkly'
+
+author: 'LaunchDarkly'
+branding:
+  icon: toggle-right
+  color: gray-dark
+
+inputs:
+  access-token:
+    description: LaunchDarkly access token
+    required: true
+    default: ''
+  project-key:
+    description: The project key
+    required: true
+  environment-key:
+    description: The project key
+    required: true
+  application-key:
+    description: The application key. Defaults to the repo name.
+    required: false
+  version:
+    description: The version. Defaults to git SHA (recommended)
+    required: false
+  event-type:
+    # This is a hard one - if we allow keying off of deployment_status, i would expect us to derive this.
+    description: 'Values: started, failed, finished'
+    required: true # visit this
+  event-metadata:
+    description: A JSON object containing metadata about the event
+    required: false
+    default: '{}'
+  deployment-metadata:
+    description: A JSON object containing metadata about the deployment
+    required: false
+    default: '{}'
+  base-uri:
+    description: 'The base URI for the LaunchDarkly server. Most users should use the default value.'
+    required: false
+    default: 'https://app.launchdarkly.com'
+
+# Outputs?
+
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
