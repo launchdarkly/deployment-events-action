@@ -17,7 +17,7 @@ jobs:
           access-token: ${{ secrets.ACCESS_TOKEN }}
           base-uri: 'https://ld-stg.launchdarkly.com'
           project-key: default
-          environment-key: test
+          environment-key: ${{ github.event.deployment_status.environment }}
           application-key: 'deployment-status-workflow'
           status: ${{ github.event.deployment_status.state }}
           event-metadata: '
