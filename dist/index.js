@@ -2865,7 +2865,7 @@ const jsonInputs = {
   deploymentMetadata: 'deployment-metadata',
 };
 
-const statuses = ['in_progress', 'success', 'failure', 'cancelled', 'skipped', 'error', 'pending', 'waiting'];
+const statuses = ['in_progress', 'success', 'failure', 'cancelled', 'skipped', 'error', 'pending', 'waiting', 'queued'];
 
 const statusToEventType = {
   in_progress: 'started',
