@@ -15,9 +15,10 @@ export const run = async () => {
     deploymentMetadata,
     baseUri,
     hasError,
+    unsupportedStatus,
   } = getConfiguration();
   core.endGroup();
-  if (hasError) {
+  if (hasError || unsupportedStatus) {
     return;
   }
 

@@ -2865,8 +2865,7 @@ const jsonInputs = {
   deploymentMetadata: 'deployment-metadata',
 };
 
-// adding pending
-const statuses = ['in_progress', 'success', 'failure', 'cancelled', 'skipped', 'error'];
+const statuses = ['in_progress', 'success', 'failure', 'cancelled', 'skipped', 'error', 'pending', 'waiting'];
 
 const statusToEventType = {
   in_progress: 'started',
@@ -2919,7 +2918,12 @@ const getConfiguration = () => {
   }
 
   const eventType = statusToEventType[status];
-  core.info(`Setting event type to ${eventType}, from status ${status}`);
+  if (eventType !== undefined) {
+    core.info(`Setting event type to ${eventType}, from status ${status}`);
+  } else {
+    core.info(`Skipping notification for unsupported status ${status}`);
+    return { unsupportedStatus: true };
+  }
 
   return {
     accessToken,
@@ -2932,6 +2936,7 @@ const getConfiguration = () => {
     deploymentMetadata,
     baseUri,
     hasError: false,
+    unsupportedStatus: false,
   };
 };
 
@@ -3037,9 +3042,10 @@ const run = async () => {
     deploymentMetadata,
     baseUri,
     hasError,
+    unsupportedStatus,
   } = getConfiguration();
   core.endGroup();
-  if (hasError) {
+  if (hasError || unsupportedStatus) {
     return;
   }
 
