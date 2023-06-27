@@ -32,8 +32,7 @@ export default class LDClient {
     };
 
     try {
-      core.debug(`${this.baseUri}/api/v2/accelerate/deployment-events`);
-      core.debug(body);
+      core.info(JSON.stringify(body, null, 4));
       const res = await this.client.postJson(`${this.baseUri}/api/v2/accelerate/deployment-events`, body);
 
       if (res.statusCode != 201) {
