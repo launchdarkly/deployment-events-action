@@ -19,6 +19,15 @@ jobs:
           project-key: default
           environment-key: test
           event-type: started
+          event-metadata: '
+            {
+            "actor": "${{ github.triggering_actor }}",
+            "ref_name": "${{ github.ref_name }}",
+            "ref_type": "${{ github.ref_type }}"
+            }'
+
+      - name: Deploying application
+        run: echo "Deploying the app..."
       - name: Notify - deployment finished
         uses: ./
         with:

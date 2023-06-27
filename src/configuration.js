@@ -8,6 +8,11 @@ const requiredInputs = {
   eventType: 'event-type',
 };
 
+const jsonInputs = {
+  eventMetadata: 'event-metadata',
+  deploymentMetadata: 'deployment-metadata',
+};
+
 const eventTypes = ['started', 'finished', 'failed'];
 
 export const validate = (args) => {
@@ -26,5 +31,14 @@ export const validate = (args) => {
     errors.push('event-type');
   }
 
+  for (const arg in jsonInputs) {
+    try {
+      JSON.parse(args[arg]);
+    } catch (e) {
+      const a = jsonInputs[arg];
+      core.error(`${a} is invalid json`);
+      errors.push(a);
+    }
+  }
   return errors;
 };

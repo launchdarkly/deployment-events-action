@@ -2860,6 +2860,11 @@ const requiredInputs = {
   eventType: 'event-type',
 };
 
+const jsonInputs = {
+  eventMetadata: 'event-metadata',
+  deploymentMetadata: 'deployment-metadata',
+};
+
 const eventTypes = ['started', 'finished', 'failed'];
 
 const validate = (args) => {
@@ -2878,6 +2883,15 @@ const validate = (args) => {
     errors.push('event-type');
   }
 
+  for (const arg in jsonInputs) {
+    try {
+      JSON.parse(args[arg]);
+    } catch (e) {
+      const a = jsonInputs[arg];
+      core.error(`${a} is invalid json`);
+      errors.push(a);
+    }
+  }
   return errors;
 };
 
@@ -2903,8 +2917,8 @@ class LDClient {
     applicationKey,
     version,
     eventType,
-    // eventMetadata,
-    // deploymentMetadata,
+    eventMetadata,
+    deploymentMetadata,
   ) {
     const body = {
       projectKey,
@@ -2913,8 +2927,8 @@ class LDClient {
       version,
       eventType,
       eventTime: Date.now(),
-      // eventMetadata,
-      // deploymentMetadata,
+      eventMetadata,
+      deploymentMetadata,
     };
 
     try {
@@ -2952,8 +2966,8 @@ const run = async () => {
   let applicationKey = core.getInput('application-key');
   let version = core.getInput('version');
   const eventType = core.getInput('event-type');
-  const eventMetadata = core.getInput('event-metadata'); // change to multiline?
-  const deploymentMetadata = core.getInput('deployment-metadata'); // change to multiline?
+  let eventMetadata = core.getInput('event-metadata');
+  let deploymentMetadata = core.getInput('deployment-metadata');
   const baseUri = core.getInput('base-uri');
 
   const validationErrors = validate({
@@ -2972,6 +2986,9 @@ const run = async () => {
     return;
   }
 
+  eventMetadata = JSON.parse(eventMetadata);
+  deploymentMetadata = JSON.parse(deploymentMetadata);
+
   if (!applicationKey) {
     applicationKey = process.env.GITHUB_REPOSITORY.split('/').pop();
     core.info(`Setting applicationKey to repository name: ${applicationKey}`);
@@ -2987,7 +3004,15 @@ const run = async () => {
   core.startGroup('Send event');
 
   const client = new LDClient(accessToken, baseUri);
-  await client.sendDeploymentEvent(projectKey, environmentKey, applicationKey, version, eventType);
+  await client.sendDeploymentEvent(
+    projectKey,
+    environmentKey,
+    applicationKey,
+    version,
+    eventType,
+    eventMetadata,
+    deploymentMetadata,
+  );
   core.endGroup();
 
   return;

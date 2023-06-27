@@ -13,8 +13,8 @@ export const run = async () => {
   let applicationKey = core.getInput('application-key');
   let version = core.getInput('version');
   const eventType = core.getInput('event-type');
-  const eventMetadata = core.getInput('event-metadata'); // change to multiline?
-  const deploymentMetadata = core.getInput('deployment-metadata'); // change to multiline?
+  let eventMetadata = core.getInput('event-metadata');
+  let deploymentMetadata = core.getInput('deployment-metadata');
   const baseUri = core.getInput('base-uri');
 
   const validationErrors = validate({
@@ -33,6 +33,9 @@ export const run = async () => {
     return;
   }
 
+  eventMetadata = JSON.parse(eventMetadata);
+  deploymentMetadata = JSON.parse(deploymentMetadata);
+
   if (!applicationKey) {
     applicationKey = process.env.GITHUB_REPOSITORY.split('/').pop();
     core.info(`Setting applicationKey to repository name: ${applicationKey}`);
@@ -48,7 +51,15 @@ export const run = async () => {
   core.startGroup('Send event');
 
   const client = new LDClient(accessToken, baseUri);
-  await client.sendDeploymentEvent(projectKey, environmentKey, applicationKey, version, eventType);
+  await client.sendDeploymentEvent(
+    projectKey,
+    environmentKey,
+    applicationKey,
+    version,
+    eventType,
+    eventMetadata,
+    deploymentMetadata,
+  );
   core.endGroup();
 
   return;

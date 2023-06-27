@@ -17,8 +17,8 @@ export default class LDClient {
     applicationKey,
     version,
     eventType,
-    // eventMetadata,
-    // deploymentMetadata,
+    eventMetadata,
+    deploymentMetadata,
   ) {
     const body = {
       projectKey,
@@ -27,8 +27,8 @@ export default class LDClient {
       version,
       eventType,
       eventTime: Date.now(),
-      // eventMetadata,
-      // deploymentMetadata,
+      eventMetadata,
+      deploymentMetadata,
     };
 
     try {
