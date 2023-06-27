@@ -1,0 +1,27 @@
+# Run test file with command:
+#   act deployment_status -e test/act/deployment_status.json
+
+name: Test deployment_status
+on: deployment_status
+
+jobs:
+  notify:
+    name: Notify LaunchDarkly of deployments
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Notify
+        uses: ./
+        with:
+          access-token: ${{ secrets.ACCESS_TOKEN }}
+          base-uri: 'https://ld-stg.launchdarkly.com'
+          project-key: default
+          environment-key: test
+          status: ${{ github.event.deployment_status.state }}
+          event-metadata: '
+            {
+            "actor": "${{ github.triggering_actor }}",
+            "ref_name": "${{ github.ref_name }}",
+            "ref_type": "${{ github.ref_type }}"
+            }'

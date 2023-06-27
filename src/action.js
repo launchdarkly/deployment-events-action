@@ -47,7 +47,7 @@ export const run = async () => {
   }
 
   const eventType = statusToEventType[status];
-  core.info(`Setting event type to ${eventType}`);
+  core.info(`Setting event type to ${eventType}, from status ${status}`);
 
   core.endGroup();
 

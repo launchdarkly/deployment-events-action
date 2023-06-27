@@ -4,6 +4,7 @@ const requiredInputs = {
   accessToken: 'access-token',
   projectKey: 'project-key',
   environmentKey: 'environment-key',
+  status: 'status',
   baseUri: 'base-uri',
 };
 
@@ -33,7 +34,7 @@ export const validate = (args) => {
     }
   }
 
-  if (args.status && !statuses.includes(args.status)) {
+  if (!statuses.includes(args.status)) {
     core.error(
       `status must be one of: "in_progress", "success", "failure", "cancelled", "skipped", but is "${args.status}"`,
     );

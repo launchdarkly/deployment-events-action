@@ -9,6 +9,8 @@ jobs:
   deploy-success:
     name: Deploying successfully
     runs-on: ubuntu-latest
+    environment:
+      name: test
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -43,6 +45,8 @@ jobs:
   deploy-fail:
     name: Deploying fails
     runs-on: ubuntu-latest
+    environment:
+      name: test
     steps:
       - name: Checkout
         uses: actions/checkout@v3
