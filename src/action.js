@@ -1,5 +1,6 @@
 import * as core from '@actions/core';
 import { validate } from './configuration';
+import LDClient from './client';
 
 export const run = async () => {
   // parse and validate args
@@ -9,8 +10,8 @@ export const run = async () => {
 
   const projectKey = core.getInput('project-key');
   const environmentKey = core.getInput('environment-key');
-  const applicationKey = core.getInput('application-key');
-  const version = core.getInput('version');
+  let applicationKey = core.getInput('application-key');
+  let version = core.getInput('version');
   const eventType = core.getInput('event-type');
   const eventMetadata = core.getInput('event-metadata'); // change to multiline?
   const deploymentMetadata = core.getInput('deployment-metadata'); // change to multiline?
@@ -32,7 +33,23 @@ export const run = async () => {
     return;
   }
 
+  if (!applicationKey) {
+    applicationKey = process.env.GITHUB_REPOSITORY.split('/').pop();
+    core.info(`Setting applicationKey to repository name: ${applicationKey}`);
+  }
+
+  if (!version) {
+    version = process.env.GITHUB_SHA;
+    core.info(`Setting version to SHA: ${version}`);
+  }
+
   core.endGroup();
-  core.debug('Running');
+
+  core.startGroup('Send event');
+
+  const client = new LDClient(accessToken, baseUri);
+  await client.sendDeploymentEvent(projectKey, environmentKey, applicationKey, version, eventType);
+  core.endGroup();
+
   return;
 };

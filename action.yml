@@ -20,9 +20,11 @@ inputs:
   application-key:
     description: The application key. Defaults to the repo name.
     required: false
+    default: ''
   version:
     description: The version. Defaults to git SHA (recommended)
     required: false
+    default: ''
   event-type:
     # This is a hard one - if we allow keying off of deployment_status, i would expect us to derive this.
     description: 'Values: started, failed, finished'

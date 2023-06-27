@@ -27,7 +27,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.issue = exports.issueCommand = void 0;
-const os = __importStar(__nccwpck_require__(37));
+const os = __importStar(__nccwpck_require__(563));
 const utils_1 = __nccwpck_require__(278);
 /**
  * Commands
@@ -138,7 +138,7 @@ exports.getIDToken = exports.getState = exports.saveState = exports.group = expo
 const command_1 = __nccwpck_require__(351);
 const file_command_1 = __nccwpck_require__(717);
 const utils_1 = __nccwpck_require__(278);
-const os = __importStar(__nccwpck_require__(37));
+const os = __importStar(__nccwpck_require__(563));
 const path = __importStar(__nccwpck_require__(17));
 const oidc_utils_1 = __nccwpck_require__(41);
 /**
@@ -473,7 +473,7 @@ exports.prepareKeyValueMessage = exports.issueFileCommand = void 0;
 // We use any as a valid input type
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const fs = __importStar(__nccwpck_require__(147));
-const os = __importStar(__nccwpck_require__(37));
+const os = __importStar(__nccwpck_require__(563));
 const uuid_1 = __nccwpck_require__(840);
 const utils_1 = __nccwpck_require__(278);
 function issueFileCommand(command, message) {
@@ -673,7 +673,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.summary = exports.markdownSummary = exports.SUMMARY_DOCS_URL = exports.SUMMARY_ENV_VAR = void 0;
-const os_1 = __nccwpck_require__(37);
+const os_1 = __nccwpck_require__(563);
 const fs_1 = __nccwpck_require__(147);
 const { access, appendFile, writeFile } = fs_1.promises;
 exports.SUMMARY_ENV_VAR = 'GITHUB_STEP_SUMMARY';
@@ -2759,7 +2759,7 @@ module.exports = require("net");
 
 /***/ }),
 
-/***/ 37:
+/***/ 563:
 /***/ ((module) => {
 
 "use strict";
@@ -2881,7 +2881,63 @@ const validate = (args) => {
   return errors;
 };
 
+// EXTERNAL MODULE: ./node_modules/@actions/http-client/lib/index.js
+var lib = __nccwpck_require__(255);
+;// CONCATENATED MODULE: ./src/client.js
+
+
+
+class LDClient {
+  constructor(accessToken, baseUri) {
+    this.client = new lib.HttpClient('deployment-events-action', undefined, {
+      headers: {
+        Authorization: accessToken.toString('base64'),
+      },
+    });
+    this.baseUri = baseUri;
+  }
+
+  async sendDeploymentEvent(
+    projectKey,
+    environmentKey,
+    applicationKey,
+    version,
+    eventType,
+    // eventMetadata,
+    // deploymentMetadata,
+  ) {
+    const body = {
+      projectKey,
+      environmentKey,
+      applicationKey,
+      version,
+      eventType,
+      eventTime: Date.now(),
+      // eventMetadata,
+      // deploymentMetadata,
+    };
+
+    try {
+      core.debug(`${this.baseUri}/api/v2/accelerate/deployment-events`);
+      core.debug(body);
+      const res = await this.client.postJson(`${this.baseUri}/api/v2/accelerate/deployment-events`, body);
+
+      if (res.statusCode != 201) {
+        const body = await res.readBody();
+        core.error('Sending deployment failed', body);
+        core.setFailed('Failed');
+      }
+    } catch (e) {
+      console.error(e);
+      core.setFailed(e);
+    }
+
+    return;
+  }
+}
+
 ;// CONCATENATED MODULE: ./src/action.js
+
 
 
 
@@ -2893,8 +2949,8 @@ const run = async () => {
 
   const projectKey = core.getInput('project-key');
   const environmentKey = core.getInput('environment-key');
-  const applicationKey = core.getInput('application-key');
-  const version = core.getInput('version');
+  let applicationKey = core.getInput('application-key');
+  let version = core.getInput('version');
   const eventType = core.getInput('event-type');
   const eventMetadata = core.getInput('event-metadata'); // change to multiline?
   const deploymentMetadata = core.getInput('deployment-metadata'); // change to multiline?
@@ -2916,8 +2972,24 @@ const run = async () => {
     return;
   }
 
+  if (!applicationKey) {
+    applicationKey = process.env.GITHUB_REPOSITORY.split('/').pop();
+    core.info(`Setting applicationKey to repository name: ${applicationKey}`);
+  }
+
+  if (!version) {
+    version = process.env.GITHUB_SHA;
+    core.info(`Setting version to SHA: ${version}`);
+  }
+
   core.endGroup();
-  core.debug('Running');
+
+  core.startGroup('Send event');
+
+  const client = new LDClient(accessToken, baseUri);
+  await client.sendDeploymentEvent(projectKey, environmentKey, applicationKey, version, eventType);
+  core.endGroup();
+
   return;
 };
 

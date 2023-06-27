@@ -1,0 +1,29 @@
+# Run test file with command:
+#   act -j deploy
+
+name: Test
+on: push
+
+jobs:
+  deploy:
+    name: Deploying
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Notify - deployment started
+        uses: ./
+        with:
+          access-token: ${{ secrets.ACCESS_TOKEN }}
+          base-uri: 'https://ld-stg.launchdarkly.com'
+          project-key: default
+          environment-key: test
+          event-type: started
+      - name: Notify - deployment finished
+        uses: ./
+        with:
+          access-token: ${{ secrets.ACCESS_TOKEN }}
+          base-uri: 'https://ld-stg.launchdarkly.com'
+          project-key: default
+          environment-key: test
+          event-type: finished
