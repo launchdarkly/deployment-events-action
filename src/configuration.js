@@ -13,17 +13,77 @@ const jsonInputs = {
   deploymentMetadata: 'deployment-metadata',
 };
 
-const statuses = ['in_progress', 'success', 'failure', 'cancelled', 'skipped'];
+// adding pending
+const statuses = ['in_progress', 'success', 'failure', 'cancelled', 'skipped', 'error'];
 
-export const statusToEventType = {
+const statusToEventType = {
   in_progress: 'started',
   success: 'finished',
   failure: 'failed',
   cancelled: 'failed',
   skipped: 'failed',
+  error: 'error',
 };
 
-export const validate = (args) => {
+export const getConfiguration = () => {
+  const accessToken = core.getInput('access-token');
+  core.setSecret(accessToken);
+  const projectKey = core.getInput('project-key');
+  const environmentKey = core.getInput('environment-key');
+  let applicationKey = core.getInput('application-key');
+  let version = core.getInput('version');
+  let status = core.getInput('status');
+  let eventMetadata = core.getInput('event-metadata');
+  let deploymentMetadata = core.getInput('deployment-metadata');
+  const baseUri = core.getInput('base-uri');
+
+  const validationErrors = validate({
+    accessToken,
+    projectKey,
+    environmentKey,
+    applicationKey,
+    version,
+    status,
+    eventMetadata,
+    deploymentMetadata,
+    baseUri,
+  });
+  if (validationErrors.length > 0) {
+    core.setFailed(`Invalid arguments: ${validationErrors.join(', ')}`);
+    return { hasError: true };
+  }
+
+  eventMetadata = JSON.parse(eventMetadata);
+  deploymentMetadata = JSON.parse(deploymentMetadata);
+
+  if (applicationKey == 'GITHUB_REPO_NAME') {
+    applicationKey = process.env.GITHUB_REPOSITORY.split('/').pop();
+    core.info(`Setting applicationKey to repository name: ${applicationKey}`);
+  }
+
+  if (version == 'GITHUB_SHA') {
+    version = process.env.GITHUB_SHA;
+    core.info(`Setting version to SHA: ${version}`);
+  }
+
+  const eventType = statusToEventType[status];
+  core.info(`Setting event type to ${eventType}, from status ${status}`);
+
+  return {
+    accessToken,
+    projectKey,
+    environmentKey,
+    applicationKey,
+    version,
+    eventType,
+    eventMetadata,
+    deploymentMetadata,
+    baseUri,
+    hasError: false,
+  };
+};
+
+const validate = (args) => {
   const errors = [];
 
   for (const arg in requiredInputs) {
