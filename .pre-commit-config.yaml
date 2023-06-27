@@ -30,11 +30,11 @@ repos:
         language: node
         pass_filenames: false
 
-      # - id: test
-      #   name: test
-      #   entry: npm run test
-      #   types_or: [javascript]
-      #   language: node
+      - id: test
+        name: test
+        entry: npm run test
+        types_or: [javascript]
+        language: node
 
       - id: action-docs
         name: action-docs
