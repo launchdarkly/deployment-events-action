@@ -5,8 +5,8 @@ name: Test
 on: push
 
 jobs:
-  deploy:
-    name: Deploying
+  deploy-success:
+    name: Deploying successfully
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -27,12 +27,51 @@ jobs:
             }'
 
       - name: Deploying application
+        id: deploy
         run: echo "Deploying the app..."
       - name: Notify - deployment finished
+        uses: ./
+        if: always()
+        with:
+          access-token: ${{ secrets.ACCESS_TOKEN }}
+          base-uri: 'https://ld-stg.launchdarkly.com'
+          project-key: default
+          environment-key: test
+          outcome: ${{ steps.deploy.outcome }}
+
+  deploy-fail:
+    name: Deploying fails
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Notify - deployment started
         uses: ./
         with:
           access-token: ${{ secrets.ACCESS_TOKEN }}
           base-uri: 'https://ld-stg.launchdarkly.com'
           project-key: default
           environment-key: test
-          event-type: finished
+          event-type: started
+          event-metadata: '
+            {
+            "actor": "${{ github.triggering_actor }}",
+            "ref_name": "${{ github.ref_name }}",
+            "ref_type": "${{ github.ref_type }}"
+            }'
+
+      - name: Deploying application
+        id: deploy
+        continue-on-error: true
+        run: |
+          echo "Deploying the app..."
+          exit 1
+      - name: Notify - deployment finished
+        uses: ./
+        if: always()
+        with:
+          access-token: ${{ secrets.ACCESS_TOKEN }}
+          base-uri: 'https://ld-stg.launchdarkly.com'
+          project-key: default
+          environment-key: test
+          outcome: ${{ steps.deploy.outcome }}

@@ -5,7 +5,6 @@ const requiredInputs = {
   projectKey: 'project-key',
   environmentKey: 'environment-key',
   baseUri: 'base-uri',
-  eventType: 'event-type',
 };
 
 const jsonInputs = {
@@ -14,6 +13,15 @@ const jsonInputs = {
 };
 
 const eventTypes = ['started', 'finished', 'failed'];
+
+// no support for skipped
+const outcomes = ['success', 'failure', 'cancelled'];
+
+export const outcomeToEventType = {
+  success: 'finished',
+  failure: 'failed',
+  cancelled: 'failed',
+};
 
 export const validate = (args) => {
   const errors = [];
@@ -26,9 +34,20 @@ export const validate = (args) => {
     }
   }
 
-  if (!eventTypes.includes(args.eventType)) {
+  if (!args.eventType && !args.outcome) {
+    core.error('Event type or outcome required.');
+    errors.push('event-type');
+    errors.push('outcome');
+  }
+
+  if (args.eventType && !eventTypes.includes(args.eventType)) {
     core.error('Event type must be one of: "started", "finished", "failed"');
     errors.push('event-type');
+  }
+
+  if (args.outcome && !outcomes.includes(args.outcome)) {
+    core.error('Outcome must be one of: "success", "failure", "cancelled"');
+    errors.push('outcome');
   }
 
   for (const arg in jsonInputs) {
@@ -40,5 +59,5 @@ export const validate = (args) => {
       errors.push(a);
     }
   }
-  return errors;
+  return new Set(errors);
 };

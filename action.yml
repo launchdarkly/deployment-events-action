@@ -26,9 +26,11 @@ inputs:
     required: false
     default: ''
   event-type:
-    # This is a hard one - if we allow keying off of deployment_status, i would expect us to derive this.
-    description: 'Values: started, failed, finished'
-    required: true # visit this
+    description: 'event-type or outcome required. Values: started, failed, finished'
+    required: false
+  outcome:
+    description: 'GitHub Action step or job outcome. Used to determine if deployment was successful. Values: success, failure, cancelled, skipped'
+    required: false
   event-metadata:
     description: A JSON object containing metadata about the event
     required: false

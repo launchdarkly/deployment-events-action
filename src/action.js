@@ -1,5 +1,5 @@
 import * as core from '@actions/core';
-import { validate } from './configuration';
+import { validate, outcomeToEventType } from './configuration';
 import LDClient from './client';
 
 export const run = async () => {
@@ -12,7 +12,8 @@ export const run = async () => {
   const environmentKey = core.getInput('environment-key');
   let applicationKey = core.getInput('application-key');
   let version = core.getInput('version');
-  const eventType = core.getInput('event-type');
+  let eventType = core.getInput('event-type');
+  const outcome = core.getInput('outcome');
   let eventMetadata = core.getInput('event-metadata');
   let deploymentMetadata = core.getInput('deployment-metadata');
   const baseUri = core.getInput('base-uri');
@@ -24,6 +25,7 @@ export const run = async () => {
     applicationKey,
     version,
     eventType,
+    outcome,
     eventMetadata,
     deploymentMetadata,
     baseUri,
@@ -44,6 +46,13 @@ export const run = async () => {
   if (!version) {
     version = process.env.GITHUB_SHA;
     core.info(`Setting version to SHA: ${version}`);
+  }
+
+  if (eventType) {
+    core.info(`Using event type: ${eventType}`);
+  } else if (outcome) {
+    eventType = outcomeToEventType[outcome];
+    core.info(`Setting event type to ${eventType}`);
   }
 
   core.endGroup();

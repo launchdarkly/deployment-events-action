@@ -2857,7 +2857,6 @@ const requiredInputs = {
   projectKey: 'project-key',
   environmentKey: 'environment-key',
   baseUri: 'base-uri',
-  eventType: 'event-type',
 };
 
 const jsonInputs = {
@@ -2866,6 +2865,15 @@ const jsonInputs = {
 };
 
 const eventTypes = ['started', 'finished', 'failed'];
+
+// no support for skipped
+const outcomes = ['success', 'failure', 'cancelled'];
+
+const outcomeToEventType = {
+  success: 'finished',
+  failure: 'failed',
+  cancelled: 'failed',
+};
 
 const validate = (args) => {
   const errors = [];
@@ -2878,9 +2886,20 @@ const validate = (args) => {
     }
   }
 
-  if (!eventTypes.includes(args.eventType)) {
+  if (!args.eventType && !args.outcome) {
+    core.error('Event type or outcome required.');
+    errors.push('event-type');
+    errors.push('outcome');
+  }
+
+  if (args.eventType && !eventTypes.includes(args.eventType)) {
     core.error('Event type must be one of: "started", "finished", "failed"');
     errors.push('event-type');
+  }
+
+  if (args.outcome && !outcomes.includes(args.outcome)) {
+    core.error('Outcome must be one of: "success", "failure", "cancelled"');
+    errors.push('outcome');
   }
 
   for (const arg in jsonInputs) {
@@ -2892,7 +2911,7 @@ const validate = (args) => {
       errors.push(a);
     }
   }
-  return errors;
+  return new Set(errors);
 };
 
 // EXTERNAL MODULE: ./node_modules/@actions/http-client/lib/index.js
@@ -2965,7 +2984,8 @@ const run = async () => {
   const environmentKey = core.getInput('environment-key');
   let applicationKey = core.getInput('application-key');
   let version = core.getInput('version');
-  const eventType = core.getInput('event-type');
+  let eventType = core.getInput('event-type');
+  const outcome = core.getInput('outcome');
   let eventMetadata = core.getInput('event-metadata');
   let deploymentMetadata = core.getInput('deployment-metadata');
   const baseUri = core.getInput('base-uri');
@@ -2977,6 +2997,7 @@ const run = async () => {
     applicationKey,
     version,
     eventType,
+    outcome,
     eventMetadata,
     deploymentMetadata,
     baseUri,
@@ -2997,6 +3018,13 @@ const run = async () => {
   if (!version) {
     version = process.env.GITHUB_SHA;
     core.info(`Setting version to SHA: ${version}`);
+  }
+
+  if (eventType) {
+    core.info(`Using event type: ${eventType}`);
+  } else if (outcome) {
+    eventType = outcomeToEventType[outcome];
+    core.info(`Setting event type to ${eventType}`);
   }
 
   core.endGroup();

@@ -6,17 +6,18 @@ Send deployment events to LaunchDarkly
 
 ## Inputs
 
-| parameter           | description                                                                        | required | default                      |
-| ------------------- | ---------------------------------------------------------------------------------- | -------- | ---------------------------- |
-| access-token        | LaunchDarkly access token                                                          | `true`   |                              |
-| project-key         | The project key                                                                    | `true`   |                              |
-| environment-key     | The project key                                                                    | `true`   |                              |
-| application-key     | The application key. Defaults to the repo name.                                    | `false`  |                              |
-| version             | The version. Defaults to git SHA (recommended)                                     | `false`  |                              |
-| event-type          | Values: started, failed, finished                                                  | `true`   |                              |
-| event-metadata      | A JSON object containing metadata about the event                                  | `false`  | {}                           |
-| deployment-metadata | A JSON object containing metadata about the deployment                             | `false`  | {}                           |
-| base-uri            | The base URI for the LaunchDarkly server. Most users should use the default value. | `false`  | https://app.launchdarkly.com |
+| parameter           | description                                                                                                                     | required | default                      |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------- | -------- | ---------------------------- |
+| access-token        | LaunchDarkly access token                                                                                                       | `true`   |                              |
+| project-key         | The project key                                                                                                                 | `true`   |                              |
+| environment-key     | The project key                                                                                                                 | `true`   |                              |
+| application-key     | The application key. Defaults to the repo name.                                                                                 | `false`  |                              |
+| version             | The version. Defaults to git SHA (recommended)                                                                                  | `false`  |                              |
+| event-type          | event-type or outcome required. Values: started, failed, finished                                                               | `false`  |                              |
+| outcome             | GitHub Action step or job outcome. Used to determine if deployment was successful. Values: success, failure, cancelled, skipped | `false`  |                              |
+| event-metadata      | A JSON object containing metadata about the event                                                                               | `false`  | {}                           |
+| deployment-metadata | A JSON object containing metadata about the deployment                                                                          | `false`  | {}                           |
+| base-uri            | The base URI for the LaunchDarkly server. Most users should use the default value.                                              | `false`  | https://app.launchdarkly.com |
 
 <!-- action-docs-inputs -->
 
