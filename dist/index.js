@@ -435,7 +435,7 @@ Object.defineProperty(exports, "markdownSummary", ({ enumerable: true, get: func
 /**
  * Path exports
  */
-var path_utils_1 = __nccwpck_require__(937);
+var path_utils_1 = __nccwpck_require__(981);
 Object.defineProperty(exports, "toPosixPath", ({ enumerable: true, get: function () { return path_utils_1.toPosixPath; } }));
 Object.defineProperty(exports, "toWin32Path", ({ enumerable: true, get: function () { return path_utils_1.toWin32Path; } }));
 Object.defineProperty(exports, "toPlatformPath", ({ enumerable: true, get: function () { return path_utils_1.toPlatformPath; } }));
@@ -592,7 +592,7 @@ exports.OidcClient = OidcClient;
 
 /***/ }),
 
-/***/ 937:
+/***/ 981:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -2135,7 +2135,7 @@ var _version = _interopRequireDefault(__nccwpck_require__(595));
 
 var _validate = _interopRequireDefault(__nccwpck_require__(900));
 
-var _stringify = _interopRequireDefault(__nccwpck_require__(981));
+var _stringify = _interopRequireDefault(__nccwpck_require__(950));
 
 var _parse = _interopRequireDefault(__nccwpck_require__(746));
 
@@ -2316,7 +2316,7 @@ exports["default"] = _default;
 
 /***/ }),
 
-/***/ 981:
+/***/ 950:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -2375,7 +2375,7 @@ exports["default"] = void 0;
 
 var _rng = _interopRequireDefault(__nccwpck_require__(807));
 
-var _stringify = _interopRequireDefault(__nccwpck_require__(981));
+var _stringify = _interopRequireDefault(__nccwpck_require__(950));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2511,7 +2511,7 @@ Object.defineProperty(exports, "__esModule", ({
 exports["default"] = _default;
 exports.URL = exports.DNS = void 0;
 
-var _stringify = _interopRequireDefault(__nccwpck_require__(981));
+var _stringify = _interopRequireDefault(__nccwpck_require__(950));
 
 var _parse = _interopRequireDefault(__nccwpck_require__(746));
 
@@ -2597,7 +2597,7 @@ exports["default"] = void 0;
 
 var _rng = _interopRequireDefault(__nccwpck_require__(807));
 
-var _stringify = _interopRequireDefault(__nccwpck_require__(981));
+var _stringify = _interopRequireDefault(__nccwpck_require__(950));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2849,7 +2849,40 @@ __nccwpck_require__.r(__webpack_exports__);
 
 // EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
 var core = __nccwpck_require__(186);
+;// CONCATENATED MODULE: ./src/configuration.js
+
+
+const requiredInputs = {
+  accessToken: 'access-token',
+  projectKey: 'project-key',
+  environmentKey: 'environment-key',
+  baseUri: 'base-uri',
+  eventType: 'event-type',
+};
+
+const eventTypes = ['started', 'finished', 'failed'];
+
+const validate = (args) => {
+  const errors = [];
+
+  for (const arg in requiredInputs) {
+    if (!args[arg]) {
+      const a = requiredInputs[arg];
+      core.error(`${a} is required`);
+      errors.push(a);
+    }
+  }
+
+  if (!eventTypes.includes(args.eventType)) {
+    core.error('Event type must be one of: "started", "finished", "failed"');
+    errors.push('event-type');
+  }
+
+  return errors;
+};
+
 ;// CONCATENATED MODULE: ./src/action.js
+
 
 
 const run = async () => {
@@ -2857,8 +2890,34 @@ const run = async () => {
   core.startGroup('Validating arguments');
   const accessToken = core.getInput('access-token');
   core.setSecret(accessToken);
-  // TODO get other inputs
 
+  const projectKey = core.getInput('project-key');
+  const environmentKey = core.getInput('environment-key');
+  const applicationKey = core.getInput('application-key');
+  const version = core.getInput('version');
+  const eventType = core.getInput('event-type');
+  const eventMetadata = core.getInput('event-metadata'); // change to multiline?
+  const deploymentMetadata = core.getInput('deployment-metadata'); // change to multiline?
+  const baseUri = core.getInput('base-uri');
+
+  const validationErrors = validate({
+    accessToken,
+    projectKey,
+    environmentKey,
+    applicationKey,
+    version,
+    eventType,
+    eventMetadata,
+    deploymentMetadata,
+    baseUri,
+  });
+  if (validationErrors.length > 0) {
+    core.setFailed(`Invalid arguments: ${validationErrors.join(', ')}`);
+    return;
+  }
+
+  core.endGroup();
+  core.debug('Running');
   return;
 };
 
