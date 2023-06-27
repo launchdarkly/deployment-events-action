@@ -2864,15 +2864,14 @@ const jsonInputs = {
   deploymentMetadata: 'deployment-metadata',
 };
 
-const eventTypes = ['started', 'finished', 'failed'];
+const statuses = ['in_progress', 'success', 'failure', 'cancelled', 'skipped'];
 
-// no support for skipped
-const outcomes = ['success', 'failure', 'cancelled'];
-
-const outcomeToEventType = {
+const statusToEventType = {
+  in_progress: 'started',
   success: 'finished',
   failure: 'failed',
   cancelled: 'failed',
+  skipped: 'failed',
 };
 
 const validate = (args) => {
@@ -2886,20 +2885,11 @@ const validate = (args) => {
     }
   }
 
-  if (!args.eventType && !args.outcome) {
-    core.error('Event type or outcome required.');
-    errors.push('event-type');
-    errors.push('outcome');
-  }
-
-  if (args.eventType && !eventTypes.includes(args.eventType)) {
-    core.error('Event type must be one of: "started", "finished", "failed"');
-    errors.push('event-type');
-  }
-
-  if (args.outcome && !outcomes.includes(args.outcome)) {
-    core.error('Outcome must be one of: "success", "failure", "cancelled"');
-    errors.push('outcome');
+  if (args.status && !statuses.includes(args.status)) {
+    core.error(
+      `status must be one of: "in_progress", "success", "failure", "cancelled", "skipped", but is "${args.status}"`,
+    );
+    errors.push('status');
   }
 
   for (const arg in jsonInputs) {
@@ -2911,7 +2901,7 @@ const validate = (args) => {
       errors.push(a);
     }
   }
-  return new Set(errors);
+  return errors;
 };
 
 // EXTERNAL MODULE: ./node_modules/@actions/http-client/lib/index.js
@@ -2983,8 +2973,7 @@ const run = async () => {
   const environmentKey = core.getInput('environment-key');
   let applicationKey = core.getInput('application-key');
   let version = core.getInput('version');
-  let eventType = core.getInput('event-type');
-  const outcome = core.getInput('outcome');
+  let status = core.getInput('status');
   let eventMetadata = core.getInput('event-metadata');
   let deploymentMetadata = core.getInput('deployment-metadata');
   const baseUri = core.getInput('base-uri');
@@ -2995,8 +2984,7 @@ const run = async () => {
     environmentKey,
     applicationKey,
     version,
-    eventType,
-    outcome,
+    status,
     eventMetadata,
     deploymentMetadata,
     baseUri,
@@ -3019,12 +3007,8 @@ const run = async () => {
     core.info(`Setting version to SHA: ${version}`);
   }
 
-  if (eventType) {
-    core.info(`Using event type: ${eventType}`);
-  } else if (outcome) {
-    eventType = outcomeToEventType[outcome];
-    core.info(`Setting event type to ${eventType}`);
-  }
+  const eventType = statusToEventType[status];
+  core.info(`Setting event type to ${eventType}`);
 
   core.endGroup();
 

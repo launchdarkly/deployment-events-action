@@ -25,11 +25,12 @@ inputs:
     description: The version. Defaults to git SHA (recommended)
     required: false
     default: ''
-  event-type:
-    description: 'event-type or outcome required. Values: started, failed, finished'
-    required: false
+  status:
+    description: 'Status of deploy. Values: in_progress, success, failure, cancelled, skipped'
+    required: true
+    default: ''
   outcome:
-    description: 'GitHub Action step or job outcome. Used to determine if deployment was successful. Values: success, failure, cancelled, skipped'
+    description: 'GitHub Action step or job outcome. Used to determine if deployment was successful. Values: success, failure, cancelled'
     required: false
   event-metadata:
     description: A JSON object containing metadata about the event

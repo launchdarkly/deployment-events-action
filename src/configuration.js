@@ -12,15 +12,14 @@ const jsonInputs = {
   deploymentMetadata: 'deployment-metadata',
 };
 
-const eventTypes = ['started', 'finished', 'failed'];
+const statuses = ['in_progress', 'success', 'failure', 'cancelled', 'skipped'];
 
-// no support for skipped
-const outcomes = ['success', 'failure', 'cancelled'];
-
-export const outcomeToEventType = {
+export const statusToEventType = {
+  in_progress: 'started',
   success: 'finished',
   failure: 'failed',
   cancelled: 'failed',
+  skipped: 'failed',
 };
 
 export const validate = (args) => {
@@ -34,20 +33,11 @@ export const validate = (args) => {
     }
   }
 
-  if (!args.eventType && !args.outcome) {
-    core.error('Event type or outcome required.');
-    errors.push('event-type');
-    errors.push('outcome');
-  }
-
-  if (args.eventType && !eventTypes.includes(args.eventType)) {
-    core.error('Event type must be one of: "started", "finished", "failed"');
-    errors.push('event-type');
-  }
-
-  if (args.outcome && !outcomes.includes(args.outcome)) {
-    core.error('Outcome must be one of: "success", "failure", "cancelled"');
-    errors.push('outcome');
+  if (args.status && !statuses.includes(args.status)) {
+    core.error(
+      `status must be one of: "in_progress", "success", "failure", "cancelled", "skipped", but is "${args.status}"`,
+    );
+    errors.push('status');
   }
 
   for (const arg in jsonInputs) {
@@ -59,5 +49,5 @@ export const validate = (args) => {
       errors.push(a);
     }
   }
-  return new Set(errors);
+  return errors;
 };

@@ -1,5 +1,6 @@
 # Run test file with command:
-#   act -j deploy
+#   act -j deploy-success
+#   act -j deploy-fail
 
 name: Test
 on: push
@@ -18,7 +19,7 @@ jobs:
           base-uri: 'https://ld-stg.launchdarkly.com'
           project-key: default
           environment-key: test
-          event-type: started
+          status: in_progress
           event-metadata: '
             {
             "actor": "${{ github.triggering_actor }}",
@@ -37,7 +38,7 @@ jobs:
           base-uri: 'https://ld-stg.launchdarkly.com'
           project-key: default
           environment-key: test
-          outcome: ${{ steps.deploy.outcome }}
+          status: ${{ steps.deploy.outcome }}
 
   deploy-fail:
     name: Deploying fails
@@ -52,7 +53,7 @@ jobs:
           base-uri: 'https://ld-stg.launchdarkly.com'
           project-key: default
           environment-key: test
-          event-type: started
+          status: in_progress
           event-metadata: '
             {
             "actor": "${{ github.triggering_actor }}",
@@ -74,4 +75,4 @@ jobs:
           base-uri: 'https://ld-stg.launchdarkly.com'
           project-key: default
           environment-key: test
-          outcome: ${{ steps.deploy.outcome }}
+          status: ${{ steps.deploy.outcome }}
