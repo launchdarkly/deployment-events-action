@@ -14,6 +14,7 @@ export const run = async () => {
     eventMetadata,
     deploymentMetadata,
     baseUri,
+    eventTime,
     hasError,
     unsupportedStatus,
   } = getConfiguration();
@@ -30,6 +31,7 @@ export const run = async () => {
     applicationKey,
     version,
     eventType,
+    eventTime,
     eventMetadata,
     deploymentMetadata,
   );

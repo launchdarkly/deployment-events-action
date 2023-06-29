@@ -1,6 +1,8 @@
 {
   "deployment_status": {
-    "state": "waiting",
-    "environment": "test"
+    "state": "success",
+    "environment": "test",
+    "actor": "act",
+    "created_at": "2023-06-20T01:19:13Z"
   }
 }

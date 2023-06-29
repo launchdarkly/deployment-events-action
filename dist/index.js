@@ -2887,6 +2887,7 @@ const getConfiguration = () => {
   let eventMetadata = core.getInput('event-metadata');
   let deploymentMetadata = core.getInput('deployment-metadata');
   const baseUri = core.getInput('base-uri');
+  const eventTimeString = core.getInput('event-time');
 
   const validationErrors = validate({
     accessToken,
@@ -2898,6 +2899,7 @@ const getConfiguration = () => {
     eventMetadata,
     deploymentMetadata,
     baseUri,
+    eventTimeString,
   });
   if (validationErrors.length > 0) {
     core.setFailed(`Invalid arguments: ${validationErrors.join(', ')}`);
@@ -2925,6 +2927,8 @@ const getConfiguration = () => {
     return { unsupportedStatus: true };
   }
 
+  const eventTime = eventTimeString === 'NOW' ? Date.now() : Date.parse(eventTimeString);
+
   return {
     accessToken,
     projectKey,
@@ -2935,6 +2939,7 @@ const getConfiguration = () => {
     eventMetadata,
     deploymentMetadata,
     baseUri,
+    eventTime,
     hasError: false,
     unsupportedStatus: false,
   };
@@ -2967,6 +2972,12 @@ const validate = (args) => {
       errors.push(a);
     }
   }
+
+  if (isNaN(Date.parse(args.eventTimeString))) {
+    core.error(`event-time is invalid datetime string "${args.eventTimeString}"`);
+    errors.push('event-time');
+  }
+
   return errors;
 };
 
@@ -2992,6 +3003,7 @@ class LDClient {
     applicationKey,
     version,
     eventType,
+    eventTime,
     eventMetadata,
     deploymentMetadata,
   ) {
@@ -3001,7 +3013,7 @@ class LDClient {
       applicationKey,
       version,
       eventType,
-      eventTime: Date.now(),
+      eventTime,
       eventMetadata,
       deploymentMetadata,
     };
@@ -3041,6 +3053,7 @@ const run = async () => {
     eventMetadata,
     deploymentMetadata,
     baseUri,
+    eventTime,
     hasError,
     unsupportedStatus,
   } = getConfiguration();
@@ -3057,6 +3070,7 @@ const run = async () => {
     applicationKey,
     version,
     eventType,
+    eventTime,
     eventMetadata,
     deploymentMetadata,
   );

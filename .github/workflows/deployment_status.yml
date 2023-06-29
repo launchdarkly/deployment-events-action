@@ -20,6 +20,7 @@ jobs:
           environment-key: ${{ github.event.deployment_status.environment }}
           application-key: 'deployment-status-workflow'
           status: ${{ github.event.deployment_status.state }}
+          event-time: ${{ github.event.deployment_status.created_at }}
           event-metadata: '
             {
             "actor": "${{ github.triggering_actor }}",

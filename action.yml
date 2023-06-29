@@ -39,6 +39,10 @@ inputs:
     description: 'The base URI for the LaunchDarkly server. Most users should use the default value.'
     required: false
     default: 'https://app.launchdarkly.com'
+  event-time:
+    description: 'Optionally set an event time for status in datetime string format. When action uses event `deployment_status`, use `github.event.deployment_status.created_at`. Example: 2012-07-20T01:19:13Z'
+    required: false
+    default: 'NOW'
 
 # Outputs?
 

@@ -6,17 +6,18 @@ Send deployment events to LaunchDarkly
 
 ## Inputs
 
-| parameter           | description                                                                        | required | default                      |
-| ------------------- | ---------------------------------------------------------------------------------- | -------- | ---------------------------- |
-| access-token        | LaunchDarkly access token                                                          | `true`   |                              |
-| project-key         | The project key                                                                    | `true`   |                              |
-| environment-key     | The environment key                                                                | `true`   |                              |
-| application-key     | The application key. Defaults to the repo name.                                    | `false`  | GITHUB_REPO_NAME             |
-| version             | The version. Defaults to git SHA (recommended).                                    | `false`  | GITHUB_SHA                   |
-| status              | Status of deploy. Values: in_progress, success, failure, cancelled, skipped.       | `true`   |                              |
-| event-metadata      | A JSON object containing metadata about the event                                  | `false`  | {}                           |
-| deployment-metadata | A JSON object containing metadata about the deployment                             | `false`  | {}                           |
-| base-uri            | The base URI for the LaunchDarkly server. Most users should use the default value. | `false`  | https://app.launchdarkly.com |
+| parameter           | description                                                                                                                                                                                   | required | default                      |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ---------------------------- |
+| access-token        | LaunchDarkly access token                                                                                                                                                                     | `true`   |                              |
+| project-key         | The project key                                                                                                                                                                               | `true`   |                              |
+| environment-key     | The environment key                                                                                                                                                                           | `true`   |                              |
+| application-key     | The application key. Defaults to the repo name.                                                                                                                                               | `false`  | GITHUB_REPO_NAME             |
+| version             | The version. Defaults to git SHA (recommended).                                                                                                                                               | `false`  | GITHUB_SHA                   |
+| status              | Status of deploy. Values: in_progress, success, failure, cancelled, skipped.                                                                                                                  | `true`   |                              |
+| event-metadata      | A JSON object containing metadata about the event                                                                                                                                             | `false`  | {}                           |
+| deployment-metadata | A JSON object containing metadata about the deployment                                                                                                                                        | `false`  | {}                           |
+| base-uri            | The base URI for the LaunchDarkly server. Most users should use the default value.                                                                                                            | `false`  | https://app.launchdarkly.com |
+| event-time          | Optionally set an event time for status in datetime string format. When action uses event `deployment_status`, use `github.event.deployment_status.created_at`. Example: 2012-07-20T01:19:13Z | `false`  | NOW                          |
 
 <!-- action-docs-inputs -->
 

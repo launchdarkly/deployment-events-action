@@ -17,6 +17,7 @@ export default class LDClient {
     applicationKey,
     version,
     eventType,
+    eventTime,
     eventMetadata,
     deploymentMetadata,
   ) {
@@ -26,7 +27,7 @@ export default class LDClient {
       applicationKey,
       version,
       eventType,
-      eventTime: Date.now(),
+      eventTime,
       eventMetadata,
       deploymentMetadata,
     };
