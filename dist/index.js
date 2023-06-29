@@ -2928,6 +2928,7 @@ const getConfiguration = () => {
   }
 
   const eventTime = eventTimeString === 'NOW' ? Date.now() : Date.parse(eventTimeString);
+  core.info(`Setting event time to ${eventTime}`);
 
   return {
     accessToken,
