@@ -71,7 +71,7 @@ export const getConfiguration = () => {
   if (eventType !== undefined) {
     core.info(`Setting event type to ${eventType}, from status ${status}`);
   } else {
-    core.info(`Skipping notification for unsupported status ${status}`);
+    core.notice(`Skipping notification for unsupported status ${status}`);
     return { unsupportedStatus: true };
   }
 
