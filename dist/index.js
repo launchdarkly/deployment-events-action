@@ -2973,7 +2973,7 @@ const validate = (args) => {
     }
   }
 
-  if (isNaN(Date.parse(args.eventTimeString))) {
+  if (args.eventTimeString !== 'NOW' && isNaN(Date.parse(args.eventTimeString))) {
     core.error(`event-time is invalid datetime string "${args.eventTimeString}"`);
     errors.push('event-time');
   }
