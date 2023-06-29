@@ -22,7 +22,7 @@ jobs:
           status: waiting
           event-metadata: '
             {
-              "actor": "${{ github.triggering_actor }}",
-              "ref_name": "${{ github.ref_name }}",
-              "ref_type": "${{ github.ref_type }}"
+            "actor": "${{ github.triggering_actor }}",
+            "ref_name": "${{ github.ref_name }}",
+            "ref_type": "${{ github.ref_type }}"
             }'
