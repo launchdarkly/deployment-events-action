@@ -19,6 +19,7 @@ jobs:
           project-key: default
           environment-key: ${{ github.event.deployment_status.environment }}
           application-key: 'deployment-status-workflow'
+          version: ${{ github.event.deployment.sha }}
           status: waiting
           event-metadata: '
             {

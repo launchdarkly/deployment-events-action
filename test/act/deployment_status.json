@@ -4,5 +4,8 @@
     "environment": "test",
     "actor": "act",
     "created_at": "2023-06-20T01:19:13Z"
+  },
+  "deployment": {
+    "sha": "81f5071ebddcce1d2c20fab93159c19a89dc649f"
   }
 }
