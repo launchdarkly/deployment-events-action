@@ -6,6 +6,7 @@ export default class LDClient {
     this.client = new httpc.HttpClient('deployment-events-action', undefined, {
       headers: {
         Authorization: accessToken.toString('base64'),
+        'User-Agent': 'deployment-events-action',
       },
     });
     this.baseUri = baseUri;
