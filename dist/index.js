@@ -2993,6 +2993,7 @@ class LDClient {
     this.client = new lib.HttpClient('deployment-events-action', undefined, {
       headers: {
         Authorization: accessToken.toString('base64'),
+        'User-Agent': 'deployment-events-action',
       },
     });
     this.baseUri = baseUri;
