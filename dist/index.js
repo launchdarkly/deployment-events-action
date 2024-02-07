@@ -2994,6 +2994,7 @@ class LDClient {
       headers: {
         Authorization: accessToken.toString('base64'),
         'User-Agent': 'deployment-events-action',
+        'LD-API-Version': 'beta',
       },
     });
     this.baseUri = baseUri;
@@ -3022,7 +3023,7 @@ class LDClient {
 
     try {
       core.notice(`Sending deployment event:\n${JSON.stringify(body, null, 4)}`);
-      const res = await this.client.postJson(`${this.baseUri}/api/v2/accelerate/deployment-events`, body);
+      const res = await this.client.postJson(`${this.baseUri}/api/v2/engineering-insights/deployment-events`, body);
 
       if (res.statusCode != 201) {
         const body = await res.readBody();
