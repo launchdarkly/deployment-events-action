@@ -7,7 +7,6 @@ export default class LDClient {
       headers: {
         Authorization: accessToken.toString('base64'),
         'User-Agent': 'deployment-events-action',
-        'LD-API-Version': 'beta',
       },
     });
     this.baseUri = baseUri;
