@@ -1,5 +1,6 @@
 import * as httpc from '@actions/http-client';
 import * as core from '@actions/core';
+import * as util from 'util';
 
 export default class LDClient {
   constructor(accessToken, baseUri) {
@@ -43,7 +44,7 @@ export default class LDClient {
         core.setFailed('Failed');
       }
     } catch (e) {
-      console.error(e);
+      console.error(util.inspect(e, { showHidden: false, depth: null, colors: true }));
       core.setFailed(e);
     }
 
